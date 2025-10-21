@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70107627b3a69cf4ba6fcacca28c1853, type: 3}
+  m_Name: Weapon_Crossbow_Unlock
+  m_EditorClassIdentifier: 
+  id: weapon_crossbow_unlock
+  title: Unlock Crossbow
+  description: "Unlocks the \u201CCrossbow\u201D weapon."
+  icon: {fileID: 0}
+  maxLevel: 1
+  weaponConfig: {fileID: 11400000, guid: e4b2338ee913d714c98949402908ba94, type: 2}

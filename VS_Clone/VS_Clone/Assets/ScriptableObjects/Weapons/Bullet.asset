@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 06afd2e0153d4bf46bd9c9162ff3987b, type: 3}
+  m_Name: Bullet
+  m_EditorClassIdentifier: 
+  id: bullet
+  fireRate: 4
+  damage: 1
+  projectileSpeed: 10
+  projectilesPerShot: 1
+  fireRange: 6
+  hasPiercing: 0
+  pierces: 0
+  hasBoomerang: 0
+  boomerangOutDistance: 5
+  boomerangReturnSpeedMult: 1.2
+  hasHoming: 0
+  homingTurnRateDegPerSec: 120
+  homingSeekRadius: 6
+  useSpread: 0
+  spreadCount: 3
+  spreadAngleDeg: 30
+  useBurst: 0
+  burstShots: 3
+  burstInterval: 0.08
+  useMultiShot: 0
+  multiShotCount: 10
