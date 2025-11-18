@@ -6,7 +6,7 @@ using TMPro;
 public class BiomeButton : MonoBehaviour
 {
     [Header("Data")]
-    [SerializeField] private BiomeConfig biome;       // el bioma que representa este botón
+    [SerializeField] private BiomeConfig biome;      
     [SerializeField] private string gameplaySceneName = "Game";
 
     [Header("UI (opcional)")]
@@ -15,7 +15,7 @@ public class BiomeButton : MonoBehaviour
 
     private void Start()
     {
-        // Auto-completar el texto del botón desde el BiomeConfig
+        
         if (biome != null)
         {
             string name = string.IsNullOrEmpty(biome.displayName) ? biome.name : biome.displayName;
@@ -40,8 +40,7 @@ public class BiomeButton : MonoBehaviour
         }
         else
         {
-            // fallback por si el Facade no estuviera
-            SceneManager.LoadScene(gameplaySceneName);
+           SceneManager.LoadScene(gameplaySceneName);
         }
     }
 }

@@ -12,11 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73e80cb4bf021ce4186df09b0a26131f, type: 3}
   m_Name: ForestBiome
   m_EditorClassIdentifier: 
-  biomeId: graveyard
-  displayName: Graveyard
-  backgroundSprite: {fileID: 0}
-  ambientColor: {r: 1, g: 1, b: 1, a: 1}
+  biomeId: forest
+  displayName: Forest
   earlyEnemies:
   - {fileID: 11400000, guid: 5d259721eb84b6642bd0fc4ee34d1113, type: 2}
+  - {fileID: 11400000, guid: ba642174d189e14439e5c7aecc6ba239, type: 2}
   midEnemies: []
   lateEnemies: []

@@ -6,10 +6,7 @@ public class GameFacade : MonoBehaviour
 {
     public static GameFacade I { get; private set; }
 
-    // -----------------------------
-    // GAME MODE / BIOMES SUPPORT
-    // -----------------------------
-
+   
     public enum GameMode
     {
         Direct,
@@ -20,12 +17,9 @@ public class GameFacade : MonoBehaviour
     public GameMode SelectedMode = GameMode.Direct;
 
     [Header("Selected Biome (set by menu)")]
-    public BiomeConfig SelectedBiome;      // <- usado por EnemySpawner
+    public BiomeConfig SelectedBiome;   
 
-    // -----------------------------
-    // UI PANELS
-    // -----------------------------
-
+   
     [Header("UI Panels")]
     [SerializeField] private GameObject pauseMenuPanel;
     [SerializeField] private GameObject gameOverPanel;
@@ -35,10 +29,6 @@ public class GameFacade : MonoBehaviour
     [SerializeField] private bool verboseLogs = true;
 
     private bool isPaused;
-
-    // ----------------------------------------------------------
-    // LIFECYCLE
-    // ----------------------------------------------------------
 
     private void Awake()
     {
@@ -90,19 +80,11 @@ public class GameFacade : MonoBehaviour
         }
     }
 
-    // ----------------------------------------------------------
-    // HELPERS
-    // ----------------------------------------------------------
-
     private bool IsGameplayScene()
     {
         string name = SceneManager.GetActiveScene().name;
         return name != "MainMenu";
     }
-
-    // ----------------------------------------------------------
-    // ENSURE / AUTO-LOCATE UI PANELS
-    // ----------------------------------------------------------
 
     private void EnsurePausePanel()
     {
@@ -154,10 +136,6 @@ public class GameFacade : MonoBehaviour
         if (!victoryPanel && go) victoryPanel = go;
     }
 
-    // ----------------------------------------------------------
-    // GAMEPLAY UI CONTROLS
-    // ----------------------------------------------------------
-
     public void Pause(bool p)
     {
         if (!IsGameplayScene()) return;
@@ -208,10 +186,6 @@ public class GameFacade : MonoBehaviour
         Time.timeScale = 0f;
     }
 
-    // ----------------------------------------------------------
-    // SCENE / FLOW CONTROL
-    // ----------------------------------------------------------
-
     public void LoadScene(string sceneName)
     {
         ResetTimeAndEvents();
@@ -236,10 +210,6 @@ public class GameFacade : MonoBehaviour
         try { EventBus.ClearQueue(); } catch { }
         Time.timeScale = 1f;
     }
-
-    // ----------------------------------------------------------
-    // RUN RESETTING
-    // ----------------------------------------------------------
 
     public void ResetRunState()
     {
@@ -278,21 +248,15 @@ public class GameFacade : MonoBehaviour
         QuitToMainMenu();
     }
 
-    // ----------------------------------------------------------
-    // REGISTERS FROM UI
-    // ----------------------------------------------------------
 
     public void RegisterPausePanel(GameObject panel) => pauseMenuPanel = panel;
     public void RegisterGameOverPanel(GameObject panel) => gameOverPanel = panel;
     public void RegisterLevelUpPanel(GameObject panel) => levelUpPanel = panel;
     public void RegisterVictoryPanel(GameObject panel) => victoryPanel = panel;
 
-    // ----------------------------------------------------------
-    // SFX (future expansion)
-    // ----------------------------------------------------------
-
+   
     public void PlaySfx(string id)
     {
-        // hook future audio manager
+        
     }
 }

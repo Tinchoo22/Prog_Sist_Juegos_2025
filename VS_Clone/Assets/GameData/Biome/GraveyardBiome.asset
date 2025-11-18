@@ -14,10 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   biomeId: graveyard
   displayName: Graveyard
-  backgroundSprite: {fileID: 0}
-  ambientColor: {r: 1, g: 1, b: 1, a: 1}
   earlyEnemies:
   - {fileID: 11400000, guid: ba642174d189e14439e5c7aecc6ba239, type: 2}
+  - {fileID: 11400000, guid: ae234caabc4b3e142a12b3d8c2b1b63c, type: 2}
   midEnemies: []
   lateEnemies:
   - {fileID: 11400000, guid: ae234caabc4b3e142a12b3d8c2b1b63c, type: 2}
