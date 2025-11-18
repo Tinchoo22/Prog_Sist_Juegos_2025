@@ -6,7 +6,27 @@ public class GameFacade : MonoBehaviour
 {
     public static GameFacade I { get; private set; }
 
-    
+    // -----------------------------
+    // GAME MODE / BIOMES SUPPORT
+    // -----------------------------
+
+    public enum GameMode
+    {
+        Direct,
+        Biome
+    }
+
+    [Header("Game Mode")]
+    public GameMode SelectedMode = GameMode.Direct;
+
+    [Header("Selected Biome (set by menu)")]
+    public BiomeConfig SelectedBiome;      // <- usado por EnemySpawner
+
+    // -----------------------------
+    // UI PANELS
+    // -----------------------------
+
+    [Header("UI Panels")]
     [SerializeField] private GameObject pauseMenuPanel;
     [SerializeField] private GameObject gameOverPanel;
     [SerializeField] private GameObject levelUpPanel;
@@ -16,23 +36,30 @@ public class GameFacade : MonoBehaviour
 
     private bool isPaused;
 
+    // ----------------------------------------------------------
+    // LIFECYCLE
+    // ----------------------------------------------------------
+
     private void Awake()
     {
         if (I != null) { Destroy(gameObject); return; }
         I = this;
+
         DontDestroyOnLoad(gameObject);
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
     private void OnDestroy()
     {
-        if (I == this) SceneManager.sceneLoaded -= OnSceneLoaded;
+        if (I == this)
+            SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         isPaused = false;
         Time.timeScale = 1f;
+
         try { EventBus.ClearQueue(); } catch { }
 
         pauseMenuPanel = null;
@@ -40,12 +67,8 @@ public class GameFacade : MonoBehaviour
         levelUpPanel = null;
         victoryPanel = null;
 
-        isPaused = false;
-        Time.timeScale = 1f;
-        try { EventBus.ClearQueue(); } catch { }
-
         if (verboseLogs)
-            Debug.Log($"[GameFacade] Cargada escena: {scene.name}");
+            Debug.Log($"[GameFacade] Escena cargada: {scene.name}");
 
         StartCoroutine(DeferredWire());
     }
@@ -59,6 +82,7 @@ public class GameFacade : MonoBehaviour
     private void Update()
     {
         if (!IsGameplayScene()) return;
+
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             if (!isPaused) Pause(true);
@@ -66,17 +90,27 @@ public class GameFacade : MonoBehaviour
         }
     }
 
+    // ----------------------------------------------------------
+    // HELPERS
+    // ----------------------------------------------------------
+
     private bool IsGameplayScene()
     {
         string name = SceneManager.GetActiveScene().name;
         return name != "MainMenu";
     }
- 
+
+    // ----------------------------------------------------------
+    // ENSURE / AUTO-LOCATE UI PANELS
+    // ----------------------------------------------------------
+
     private void EnsurePausePanel()
     {
         if (pauseMenuPanel) return;
+
         var ui = FindObjectOfType<PauseMenuUI>(true);
         if (ui) pauseMenuPanel = ui.gameObject;
+
         if (!pauseMenuPanel)
         {
             var go = GameObject.Find("Panel_Pause");
@@ -87,8 +121,10 @@ public class GameFacade : MonoBehaviour
     private void EnsureGameOverPanel()
     {
         if (gameOverPanel) return;
+
         var ui = FindObjectOfType<GameOverMenu>(true);
         if (ui) gameOverPanel = ui.gameObject;
+
         if (!gameOverPanel)
         {
             var go = GameObject.Find("Panel_GameOver");
@@ -99,35 +135,42 @@ public class GameFacade : MonoBehaviour
     private void EnsureLevelUpPanel()
     {
         if (levelUpPanel) return;
-        var go = GameObject.Find("LevelUpPanel");
-        if (go) levelUpPanel = go;
+
         var menu = FindObjectOfType<LevelUpMenu>(true);
-        if (!levelUpPanel && menu) levelUpPanel = menu.gameObject;
+        if (menu) levelUpPanel = menu.gameObject;
+
+        var go2 = GameObject.Find("LevelUpPanel");
+        if (!levelUpPanel && go2) levelUpPanel = go2;
     }
 
     private void EnsureVictoryPanel()
     {
         if (victoryPanel) return;
+
         var ui = FindObjectOfType<VictoryMenu>(true);
         if (ui) victoryPanel = ui.gameObject;
-        if (!victoryPanel)
-        {
-            var go = GameObject.Find("VictoryPanel");
-            if (go) victoryPanel = go;
-        }
+
+        var go = GameObject.Find("VictoryPanel");
+        if (!victoryPanel && go) victoryPanel = go;
     }
+
+    // ----------------------------------------------------------
+    // GAMEPLAY UI CONTROLS
+    // ----------------------------------------------------------
 
     public void Pause(bool p)
     {
         if (!IsGameplayScene()) return;
 
         isPaused = p;
+
         if (p && !pauseMenuPanel) EnsurePausePanel();
 
         if (pauseMenuPanel)
         {
             var ui = pauseMenuPanel.GetComponent<PauseMenuUI>();
             if (!ui) ui = pauseMenuPanel.GetComponentInChildren<PauseMenuUI>(true);
+
             if (ui) ui.SetVisible(p, forceAlpha: true);
             else pauseMenuPanel.SetActive(p);
         }
@@ -139,8 +182,9 @@ public class GameFacade : MonoBehaviour
     {
         if (!IsGameplayScene()) return;
 
-        if (!gameOverPanel) EnsureGameOverPanel();
+        EnsureGameOverPanel();
         if (gameOverPanel) gameOverPanel.SetActive(true);
+
         Time.timeScale = 0f;
     }
 
@@ -148,8 +192,9 @@ public class GameFacade : MonoBehaviour
     {
         if (!IsGameplayScene()) return;
 
-        if (show && !levelUpPanel) EnsureLevelUpPanel();
+        if (show) EnsureLevelUpPanel();
         if (levelUpPanel) levelUpPanel.SetActive(show);
+
         Time.timeScale = show ? 0f : 1f;
     }
 
@@ -157,33 +202,44 @@ public class GameFacade : MonoBehaviour
     {
         if (!IsGameplayScene()) return;
 
-        if (!victoryPanel) EnsureVictoryPanel();
+        EnsureVictoryPanel();
         if (victoryPanel) victoryPanel.SetActive(true);
 
-     
         Time.timeScale = 0f;
     }
- 
+
+    // ----------------------------------------------------------
+    // SCENE / FLOW CONTROL
+    // ----------------------------------------------------------
+
     public void LoadScene(string sceneName)
     {
-        try { EventBus.ClearQueue(); } catch { }
-        Time.timeScale = 1f;
+        ResetTimeAndEvents();
         SceneManager.LoadScene(sceneName);
     }
 
     public void RestartCurrent()
     {
-        try { EventBus.ClearQueue(); } catch { }
-        Time.timeScale = 1f;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        ResetTimeAndEvents();
+        Scene current = SceneManager.GetActiveScene();
+        SceneManager.LoadScene(current.name);
     }
 
     public void QuitToMainMenu()
     {
-        try { EventBus.ClearQueue(); } catch { }
-        Time.timeScale = 1f;
+        ResetTimeAndEvents();
         SceneManager.LoadScene("MainMenu");
     }
+
+    private void ResetTimeAndEvents()
+    {
+        try { EventBus.ClearQueue(); } catch { }
+        Time.timeScale = 1f;
+    }
+
+    // ----------------------------------------------------------
+    // RUN RESETTING
+    // ----------------------------------------------------------
 
     public void ResetRunState()
     {
@@ -200,12 +256,13 @@ public class GameFacade : MonoBehaviour
             if (e) e.gameObject.SetActive(false);
 
         foreach (var o in FindObjectsOfType<XPOrb>(true))
-            if (o) Object.Destroy(o.gameObject);
+            if (o) Destroy(o.gameObject);
 
         foreach (var pr in FindObjectsOfType<Projectile>(true))
         {
             if (!pr) continue;
-            try { pr.Despawn(); } catch { pr.gameObject.SetActive(false); }
+            try { pr.Despawn(); }
+            catch { pr.gameObject.SetActive(false); }
         }
     }
 
@@ -221,10 +278,21 @@ public class GameFacade : MonoBehaviour
         QuitToMainMenu();
     }
 
+    // ----------------------------------------------------------
+    // REGISTERS FROM UI
+    // ----------------------------------------------------------
+
     public void RegisterPausePanel(GameObject panel) => pauseMenuPanel = panel;
     public void RegisterGameOverPanel(GameObject panel) => gameOverPanel = panel;
     public void RegisterLevelUpPanel(GameObject panel) => levelUpPanel = panel;
     public void RegisterVictoryPanel(GameObject panel) => victoryPanel = panel;
 
-    public void PlaySfx(string id) {  }
+    // ----------------------------------------------------------
+    // SFX (future expansion)
+    // ----------------------------------------------------------
+
+    public void PlaySfx(string id)
+    {
+        // hook future audio manager
+    }
 }
